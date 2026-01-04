@@ -6,8 +6,12 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getHome() {
+    return {
+      status: "Bot is online 🚀",
+      commands: ["!tarot", "!tuvi", "!boitinhyeu", "!dailyfortune"],
+      author: "Your Name"
+    };
   }
 }
 
