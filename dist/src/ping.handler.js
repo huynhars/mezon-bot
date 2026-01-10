@@ -49,6 +49,7 @@ let FortuneHandler = class FortuneHandler {
             "Công bằng, hài hòa", "Mạnh mẽ, bí ẩn", "Lạc quan, phiêu lưu",
             "Tham vọng, kiên nhẫn", "Độc lập, sáng tạo", "Mơ mộng, nhân ái"
         ];
+        this.zodiacPool = [...this.zodiacSigns];
     }
     async onTarot([managedMessage]) {
         const randomCard = this.tarotCards[Math.floor(Math.random() * this.tarotCards.length)];
@@ -60,8 +61,8 @@ let FortuneHandler = class FortuneHandler {
     }
     async onTuVi([managedMessage]) {
         const randomSignIndex = Math.floor(Math.random() * this.zodiacSigns.length);
-        const zodiacSign = this.zodiacSigns[randomSignIndex];
-        const personality = this.zodiacPersonalities[randomSignIndex];
+        const zodiacSign = this.zodiacPool.splice(randomSignIndex, 1)[0];
+        const personality = this.zodiacPersonalities[this.zodiacSigns.indexOf(zodiacSign)];
         const predictions = [
             "Công việc thuận lợi, có cơ hội thăng tiến",
             "Tài chính ổn định, có khoản thu nhập bất ngờ",
@@ -73,7 +74,7 @@ let FortuneHandler = class FortuneHandler {
         const randomPrediction = predictions[Math.floor(Math.random() * predictions.length)];
         const luckyNumber = Math.floor(Math.random() * 100) + 1;
         const luckyColor = ["Đỏ", "Vàng", "Xanh dương", "Xanh lá", "Tím", "Hồng"][Math.floor(Math.random()) * 6];
-        const message = nezon_1.SmartMessage.text(`✨ Tử vi ${zodiacSign} hôm nay ✨\n\n` +
+        const message = nezon_1.SmartMessage.text(`✨ Tử vi ${zodiacSign.name} hôm nay ✨\n\n` +
             `🏷️ Tính cách: ${personality}\n` +
             `🔮 Dự đoán: ${randomPrediction}\n` +
             `🎯 Con số may mắn: ${luckyNumber}\n` +
@@ -113,125 +114,59 @@ let FortuneHandler = class FortuneHandler {
     }
     async onDailyFortune([managedMessage]) {
         const today = new Date();
-        const dayOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"][today.getDay()];
-        const month = today.getMonth() + 1;
         const day = today.getDate();
+        const month = today.getMonth() + 1;
         const year = today.getFullYear();
         const luckyNumber = (day + month + year) % 100 || 7;
-        let specialDay = "";
-        if (day === 1)
-            specialDay = "✨ Ngày đầu tháng - Khởi đầu mới!";
-        else if (day === 15)
-            specialDay = "🌕 Ngày rằm - Năng lượng mạnh mẽ!";
-        else if (dayOfWeek === "Chủ nhật")
-            specialDay = "☀️ Chủ Nhật - cuối tuần vui vẻ";
-        const fortunes = [
-            `Hôm nay là ngày may mắn! Mọi việc sẽ diễn ra thuận lợi.`,
-            `Cơ hội vàng đang đến gần, hãy sẵn sàng nắm bắt!`,
-            `Một ngày tuyệt vời để bắt đầu dự án mới hoặc học kỹ năng mới.`,
-            `Tập trung vào các mối quan hệ cá nhân, tình cảm sẽ phát triển tốt.`,
-            `Thời điểm tốt để giải quyết các vấn đề tồn đọng.`,
-            `Chú ý đến sức khỏe và nghỉ ngơi đầy đủ để nạp năng lượng.`,
-            `Thể hiện sự sáng tạo của bạn, ý tưởng độc đáo sẽ được đánh giá cao.`,
-            `Giúp đỡ người khác sẽ mang lại may mắn và niềm vui cho bạn.`,
-            `Tin tốt sẽ đến từ phương xa hoặc từ người thân.`,
-            `Hãy tin tưởng vào quyết định của mình, trực giác đang rất chính xác.`
+        const luckyMessages = [
+            "Hãy tin vào trực giác của bạn hôm nay ✨",
+            "Một cơ hội nhỏ có thể mang lại điều lớn lao 🍀",
+            "Nụ cười sẽ mang lại may mắn cho bạn 😊",
+            "Hôm nay thích hợp để bắt đầu điều mới 🌱",
+            "Giữ tâm thế tích cực, may mắn sẽ đến 💫"
         ];
-        const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-        const moods = [
-            { mood: "😊 Vui vẻ", desc: "Truyền năng lượng tích cực" },
-            { mood: "💪 Mạnh mẽ", desc: "Đối mặt thử thách" },
-            { mood: "🧘 Bình tĩnh", desc: "Giữ tâm trí an yên" },
-            { mood: "🎯 Tập trung", desc: "Hoàn thành mục tiêu" },
-            { mood: "✨ Lạc quan", desc: "Nhìn thấy cơ hội" },
-            { mood: "🤗 Hào phóng", desc: "Chia sẻ với người khác" },
-            { mood: "🌟 Sáng tạo", desc: "Tạo ra điều mới mẻ" }
-        ];
-        const randomMood = moods[Math.floor(Math.random() * moods.length)];
-        const energyLevel = Math.floor(Math.random() * 100) + 1;
-        let energyDesc = "";
-        if (energyLevel >= 80)
-            energyDesc = "💥 Rất cao - Sẵn sàng hành động!";
-        else if (energyLevel >= 60)
-            energyDesc = "⚡ Cao - Làm việc hiệu quả!";
-        else if (energyLevel >= 40)
-            energyDesc = "🌀 Trung bình - Ổn định!";
-        else if (energyLevel >= 20)
-            energyDesc = "🌊 Thấp - Cần nghỉ ngơi!";
-        else
-            energyDesc = "💤 Rất thấp - Nạp năng lượng!";
-        const message = nezon_1.SmartMessage.text(`📅 ${dayOfWeek.toUpperCase()}, NGÀY ${day}/${month}/${year}** 📅\n\n` +
-            `${specialDay ? `🎊 **NGÀY ĐẶC BIỆT: ${specialDay}\n\n` : ''}` +
-            `🔮 VẬN MỆNH HÔM NAY:\n${randomFortune}\n\n` +
-            `📊 CHỈ SỐ NĂNG LƯỢNG: ${energyLevel}%\n` +
-            `⚡ Đánh giá: ${energyDesc}\n\n` +
-            `😊 TÂM TRẠNG NÊN CÓ: ${randomMood.mood}\n` +
-            `📝 Lý do: ${randomMood.desc}\n\n` +
-            `🎯 CON SỐ MAY MẮN: ${luckyNumber}\n\n` +
-            `💫 LỜI NHẮN TỪ VŨ TRỤ:\n` +
-            `"Mỗi ngày mới là một trang giấy trắng, hãy viết nên câu chuyện tuyệt vời của riêng bạn!"*\n\n` +
-            `📖 CÁC LỆNH KHÁC:**\n` +
-            `• \`!tarot\` - Xem bài Tarot\n` +
-            `• \`!tuvi\` - Xem tử vi cung hoàng đạo\n` +
-            `• \`!boitinhyeu\` - Bói tình yêu\n` +
-            `• \`!randomfortune\` - Bói ngẫu nhiên\n` +
-            `• \`!helpfortune\` - Hướng dẫn sử dụng`);
+        const message = nezon_1.SmartMessage.text(`🍀 SỐ MAY MẮN HÔM NAY 🍀\n\n` +
+            `📅 ${today.toLocaleDateString("vi-VN")}\n` +
+            `🎯 Con số may mắn: ${luckyNumber}\n\n` +
+            `💬 Thông điệp:\n"${luckyMessages[Math.floor(Math.random() * luckyMessages.length)]}"`);
         await managedMessage.reply(message);
     }
-    async onRandomFortune([managedMessage]) {
-        const fortunes = [
-            "Hôm nay là ngày may mắn của bạn! Hãy tin vào điều đó.",
-            "Một điều bất ngờ và tuyệt vời đang chờ đón bạn ở phía trước.",
-            "Hãy chuẩn bị tinh thần cho một thay đổi lớn sắp đến.",
-            "Cơ hội vàng đang đến gần, hãy sẵn sàng nắm bắt nó.",
-            "Tin tốt sẽ đến với bạn sớm thôi, hãy kiên nhẫn chờ đợi.",
-            "Hãy tin tưởng vào quyết định của mình, nó là chính xác.",
-            "Thời điểm thích hợp để bắt đầu một dự án mới hoặc theo đuổi đam mê.",
-            "Sự kiên nhẫn của bạn sẽ được đền đáp xứng đáng trong tương lai gần.",
-            "Bạn sắp gặp gỡ một người mới sẽ thay đổi cuộc đời bạn theo hướng tích cực.",
-            "Thành công đang ở ngay trước mắt, chỉ cần bạn với tay ra nắm lấy.",
-            "Hãy lắng nghe trái tim mình, nó biết điều gì tốt nhất cho bạn.",
-            "Một cánh cửa đóng lại sẽ có một cánh cửa khác mở ra.",
-            "Đừng sợ thất bại, vì đó là bước đệm cho thành công.",
-            "Hạnh phúc không ở đâu xa, mà ở ngay trong tầm tay bạn.",
-            "Hãy sống trọn vẹn từng khoảnh khắc, vì thời gian không chờ đợi ai."
-        ];
-        const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-        const luckyElements = [
-            { element: "Lửa 🔥", desc: "Đam mê, năng lượng, chuyển đổi" },
-            { element: "Nước💧", desc: "Cảm xúc, trực giác, chữa lành" },
-            { element: "Khí 💨", desc: "Trí tuệ, giao tiếp, tự do" },
-            { element: "Đất 🌍", desc: "Ổn định, thực tế, phát triển" }
-        ];
-        const moonPhases = [
-            { phase: "Trăng non 🌑", desc: "Khởi đầu mới, ý định" },
-            { phase: "Trăng lưỡi liềm 🌒", desc: "Tăng trưởng, hành động" },
-            { phase: "Trăng khuyết 🌔", desc: "Phản ánh, điều chỉnh" },
-            { phase: "Trăng tròn 🌕", desc: "Hoàn thành, tỏa sáng" },
-            { phase: "Trăng bán nguyệt cuối 🌗", desc: "Tha thứ, nghỉ ngơi" },
-            { phase: "Trăng khuyết dần 🌖", desc: "Biết ơn, ruồng bỏ" },
-            { phase: "Trăng tàn 🌘", desc: "Hoàn thành, tỏa sáng" },
-        ];
-        const randomElement = luckyElements[Math.floor(Math.random() * luckyElements.length)];
-        const randomMoonPhase = moonPhases[Math.floor(Math.random() * moonPhases.length)];
-        const luckyTime = ["Sáng sớm", "Trưa", "Chiều tà", "Tối", "Nửa đêm"][Math.floor(Math.random() * 5)];
-        const affirmation = [
-            "Tôi xứng đáng với hạnh phúc và thành công",
-            "Mọi điều tốt đẹp đang đến với tôi",
-            "Tôi tin vào bản thân và khả năng của mình",
-            "Tôi thu hút sự tích cực và may mắn",
-            "Hôm nay sẽ là một ngày tuyệt vời",
-            "Tôi mạnh mẽ, tôi có thể, tôi sẽ làm được"
-        ][Math.floor(Math.random() * 6)];
-        const message = nezon_1.SmartMessage.text(`🎲 BÓI NGẪU NHIÊN \n\n` +
-            `🔮 LỜI TIÊN TRI: \n"${randomFortune}"\n\n` +
-            `🌌 PHA MẶT TRĂNG: ${randomMoonPhase.phase}\n` +
-            `📖 Ý nghĩa: ${randomMoonPhase.desc}\n\n` +
-            `⚡ NGUYÊN TỐ MAY MẮN: ${randomElement.element}\n` +
-            `📚 Đặc tính: ${randomElement.desc}\n\n` +
-            `⏰ THỜI GIAN MAY MẮN: ${luckyTime}\n` +
-            `💭 KHẲNG ĐỊNH TÍCH CỰC: ${affirmation}\n\n` +
-            `✨ "Vận mệnh không định đoạt cuộc đời bạn, mà chính bạn mới là người vẽ nên con đường của mình"`);
+    async onMenh([managedMessage]) {
+        const menhs = {
+            Kim: {
+                wear: ["Trắng", "Xám", "Vàng nhạt"],
+                avoid: ["Đỏ", "Hồng"],
+                advice: "Thuận lợi cho công việc và tài chính"
+            },
+            Mộc: {
+                wear: ["Xanh lá", "Nâu"],
+                avoid: ["Trắng", "Xám"],
+                advice: "Phù hợp khởi đầu mới"
+            },
+            Thủy: {
+                wear: ["Xanh dương", "Đen"],
+                avoid: ["Vàng", "Nâu"],
+                advice: "Tốt cho giao tiếp và cảm xúc"
+            },
+            Hỏa: {
+                wear: ["Đỏ", "Cam", "Hồng"],
+                avoid: ["Đen", "Xanh dương"],
+                advice: "Năng lượng cao, nên hành động"
+            },
+            Thổ: {
+                wear: ["Vàng", "Nâu đất"],
+                avoid: ["Xanh lá"],
+                advice: "Ổn định, tránh quyết định vội"
+            }
+        };
+        const keys = Object.keys(menhs);
+        const menh = keys[Math.floor(Math.random() * keys.length)];
+        const data = menhs[menh];
+        const message = nezon_1.SmartMessage.text(`🔮 BÓI THEO MỆNH HÔM NAY 🔮\n\n` +
+            `🧿 Mệnh: ${menh}\n` +
+            `👕 Nên mặc: ${data.wear.join(", ")}\n` +
+            `🚫 Tránh mặc: ${data.avoid.join(", ")}\n\n` +
+            `💬 Lời khuyên: ${data.advice}`);
         await managedMessage.reply(message);
     }
     async onQuickHoroscope([managedMessage]) {
@@ -297,19 +232,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FortuneHandler.prototype, "OnLoveFortune", null);
 __decorate([
-    (0, nezon_1.Command)({ name: "boitinhyeu", aliases: ["daily", "hangngay"], description: "Xem bói vận mệnh hàng ngày" }),
+    (0, nezon_1.Command)({ name: "xemsomaymanhomnay", aliases: ["daily", "hangngay"], description: "Số may mắn hôm nay" }),
     __param(0, (0, nezon_1.AutoContext)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
 ], FortuneHandler.prototype, "onDailyFortune", null);
 __decorate([
-    (0, nezon_1.Command)({ name: "randomfortune", aliases: ["random", "ngaunhien"], description: "Xem bói ngẫu nhiên" }),
+    (0, nezon_1.Command)({ name: "menh", description: "Xem bói theo mệnh & mặc gì hôm nay" }),
     __param(0, (0, nezon_1.AutoContext)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
-], FortuneHandler.prototype, "onRandomFortune", null);
+], FortuneHandler.prototype, "onMenh", null);
 __decorate([
     (0, nezon_1.Command)({ name: "tuvihomnay", aliases: ["tuvingaynay", "horoscope"], description: "Tử vi hôm nay" }),
     __param(0, (0, nezon_1.AutoContext)()),
